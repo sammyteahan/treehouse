@@ -6,6 +6,12 @@ var express = require('express'),
 
 
 /**
+* Set static path for publicly accessible files.
+* Prepend with static to access via url
+*/
+app.use('/static', express.static(__dirname + '/public'));
+
+/**
 * Set our template engine and correct path
 */
 app.set('view engine', 'jade');
