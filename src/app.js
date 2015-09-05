@@ -5,6 +5,11 @@ var express = require('express'),
         app = express();
 
 
+// make the mocked data an array to iterate over
+var postList = Object.keys(posts).map(function (value) {
+  return posts[value];
+});
+
 /**
 * Set static path for publicly accessible files.
 * Prepend with static to access via url
@@ -18,17 +23,32 @@ app.set('view engine', 'jade');
 app.set('views', __dirname + '/templates');
 
 app.get('/', function (req, res) {
-  res.render('index');
+  var path = req.path;
+  res.render('index', {path: path});
 });
 
 app.get('/blog/:title?', function (req, res) {
   var title = req.params.title;
   if (title === undefined) {
-    res.status(503);
-    res.send('This page is under construction');
+    res.render('blog', {posts: postList});
   } else {
     var post = posts[title] || {};
     res.render('post', {post: post});
+  }
+});
+
+/**
+* A basic api endpoint. We also accept 
+* a query parameter here
+*
+* e.g. localhost:3000/blog?raw=true will 
+* return the unmodified json object
+*/
+app.get('/posts', function (req, res) {
+  if(req.query.raw) {
+    res.json(posts);
+  } else {
+    res.json(postList);
   }
 });
 
